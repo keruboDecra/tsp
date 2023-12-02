@@ -61,6 +61,12 @@ def main():
     attempts = st.session_state.get("attempts", [])
     selected_attempt = st.sidebar.selectbox("Select attempt", [f"Attempt {i+1}" for i in range(len(attempts))] + ["New Attempt"])
 
+    # Delete button
+    if st.sidebar.button("Delete Attempt") and selected_attempt != "New Attempt":
+        del attempts[int(selected_attempt.split()[-1]) - 1]
+        st.session_state.attempts = attempts
+        selected_attempt = "New Attempt"  # Reset to a new attempt after deletion
+
     if selected_attempt == "New Attempt":
         tsp_solver = TSPSolver()
         attempts.append(tsp_solver)
@@ -82,18 +88,12 @@ def main():
             except ValueError as e:
                 st.error(str(e))
 
-            # Button to delete the current attempt
-            if st.button("Delete Current Attempt"):
-                attempts.remove(tsp_solver)
-                st.session_state.attempts = attempts
-                st.success("Current attempt deleted successfully!")
-
     elif option == "Set Cost Matrix":
         if tsp_solver.cities:
             tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
             st.table(tsp_solver.cost_matrix)
 
-            # Allow the user to input costs in the matrix
+            # Allow user to input costs in the matrix
             for i in range(len(tsp_solver.cities)):
                 for j in range(i + 1, len(tsp_solver.cities)):
                     cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
