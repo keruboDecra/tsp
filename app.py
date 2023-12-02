@@ -29,7 +29,7 @@ class TSPSolver:
     def solve_tsp(self):
         # Generate all possible permutations of cities
         all_permutations = permutations(self.cities)
-    
+
         # Calculate the total cost for each permutation
         total_costs = []
         for perm in all_permutations:
@@ -37,16 +37,16 @@ class TSPSolver:
             for i in range(len(perm) - 1):
                 cost += self.cost_matrix.at[perm[i], perm[i + 1]]
             cost += self.cost_matrix.at[perm[-1], perm[0]]  # Return to the starting city
-    
+
             # Consider the user-selected starting city
             if self.start_city:
                 cost += self.cost_matrix.at[self.start_city, perm[0]]
-    
+
             total_costs.append((perm + (perm[0],), cost))  # Append the starting city to the permutation
-    
+
         # Find the permutation with the minimum total cost
         min_permutation, min_cost = min(total_costs, key=lambda x: x[1])
-    
+
         return min_permutation, min_cost
 
 
