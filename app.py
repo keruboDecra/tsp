@@ -13,7 +13,6 @@ class TSPSolver:
         self.cities.append(city)
 
     def set_start_city(self, city):
-        self.start_city = None  # Reset start_city
         if city in self.cities:
             self.start_city = city
         else:
@@ -73,6 +72,13 @@ def main():
             tsp_solver.add_city(city)
             st.success(f"City '{city}' added successfully!")
 
+        # Allow user to edit their input of cities
+        if st.button("Edit Cities"):
+            st.text("Current Cities: " + ", ".join(tsp_solver.cities))
+            new_cities = st.text_input("Enter new cities (comma-separated):")
+            tsp_solver.cities = [city.strip() for city in new_cities.split(",") if city.strip()]
+            st.success("Cities updated successfully!")
+
     elif option == "Set Cost Matrix":
         if tsp_solver.cities:
             tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
@@ -86,6 +92,7 @@ def main():
 
             # Button to set start city
             if st.button("Set Start City"):
+                tsp_solver.start_city = None
                 if tsp_solver.cities:
                     start_city = st.selectbox("Select start city:", tsp_solver.cities)
                     try:
