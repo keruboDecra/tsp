@@ -38,9 +38,9 @@ class TSPSolver:
                 cost += self.cost_matrix.at[perm[i], perm[i + 1]]
             cost += self.cost_matrix.at[perm[-1], perm[0]]  # Return to the starting city
 
-            # Consider the starting city
+            # Consider the user-selected starting city
             if self.start_city:
-                cost += self.cost_matrix.at[self.start_city, perm[0]]
+                cost -= self.cost_matrix.at[self.start_city, perm[0]]
 
             total_costs.append((perm + (perm[0],), cost))  # Append the starting city to the permutation
 
@@ -62,7 +62,7 @@ def main():
     selected_attempt = st.sidebar.selectbox("Select attempt", [f"Attempt {i+1}" for i in range(len(attempts))] + ["New Attempt"])
 
     # Delete button
-    if st.sidebar.button("Delete Attempt Input") and selected_attempt != "New Attempt":
+    if st.sidebar.button("Delete Attempt") and selected_attempt != "New Attempt":
         del attempts[int(selected_attempt.split()[-1]) - 1]
         st.session_state.attempts = attempts
         selected_attempt = "New Attempt"  # Reset to a new attempt after deletion
