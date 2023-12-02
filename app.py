@@ -80,11 +80,11 @@ def main():
 
     # Main content
     st.sidebar.subheader("Options")
-    option = st.sidebar.selectbox("Select an option", ["Add City"])
+    option = st.sidebar.selectbox("Select an option", ["Add City", "Set Cost Matrix"])
 
-    # Display added cities as a matrix
+    # Display added cities as a matrix and set cost matrix
     if tsp_solver.cities:
-        st.subheader("Add City")
+        st.subheader("Add City and Set Cost Matrix")
         city = st.text_input("Enter city name:")
         if st.button("Add City"):
             try:
