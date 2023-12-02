@@ -60,14 +60,11 @@ def main():
     st.title("Traveling Salesman Problem Solver")
 
     attempts = st.session_state.get("attempts", [])
-    
-    # Sidebar
-    st.sidebar.header("Options")
-    
-    selected_attempt = st.sidebar.selectbox("Select attempt", [f"Attempt {i+1}" for i in range(len(attempts))] + ["New Attempt"])
+
+    selected_attempt = st.selectbox("Select attempt", [f"Attempt {i+1}" for i in range(len(attempts))] + ["New Attempt"])
 
     # Delete button
-    if st.sidebar.button("Delete Attempt") and selected_attempt != "New Attempt":
+    if st.button("Delete Attempt") and selected_attempt != "New Attempt":
         attempts = [attempt for i, attempt in enumerate(attempts) if i != int(selected_attempt.split()[-1]) - 1]
         st.session_state.attempts = attempts
         selected_attempt = "New Attempt"  # Reset to a new attempt after deletion
@@ -79,59 +76,62 @@ def main():
     else:
         tsp_solver = attempts[int(selected_attempt.split()[-1]) - 1]
 
-    # Main content
-    st.sidebar.subheader("Options")
-    option = st.sidebar.selectbox("Select an option", ["Add City", "Set Cost Matrix"])
+    # Add City section
+    st.subheader("Add City")
+    city = st.text_input("Enter city name:")
+    if st.button("Add City"):
+        try:
+            tsp_solver.add_city(city)
+            st.success(f"City '{city}' added successfully!")
+        except ValueError as e:
+            st.error(str(e))
 
-    # Display added cities as a matrix
+    # Set Matrix Costs section
+    st.subheader("Set Matrix Costs")
     if tsp_solver.cities:
-        st.subheader("Added Cities Matrix:")
-        st.write(create_matrix_table(tsp_solver.cities))
+        tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
 
-    if option == "Add City":
-        st.subheader("Add City")
-        city = st.text_input("Enter city name:")
-        if st.button("Add City"):
+        # Create an empty placeholder for the matrix
+        matrix_placeholder = st.empty()
+        
+        # Allow user to input costs in the matrix
+        for i in range(len(tsp_solver.cities)):
+            for j in range(i + 1, len(tsp_solver.cities)):
+                cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
+                tsp_solver.set_cost(tsp_solver.cities[i], tsp_solver.cities[j], cost)
+                
+                # Dynamically update the matrix table
+                matrix_placeholder.table(tsp_solver.cost_matrix)
+
+    if st.button("Set Start City"):
+        if tsp_solver.cities:
+            start_city = st.selectbox("Select start city:", tsp_solver.cities)
             try:
-                tsp_solver.add_city(city)
-                st.success(f"City '{city}' added successfully!")
+                tsp_solver.set_start_city(start_city)
+                st.success(f"Start city set to '{start_city}' successfully!")
             except ValueError as e:
                 st.error(str(e))
+        else:
+            st.warning("Please add cities first.")
 
-    elif option == "Set Cost Matrix":
-        st.subheader("Set Cost Matrix")
-        if tsp_solver.cities:
-            tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
-            st.table(tsp_solver.cost_matrix)
+    if st.button("Solve TSP"):
+        try:
+            result, cost = tsp_solver.solve_tsp()
+            route = ' -> '.join(result)
+            st.subheader("Optimal Path:")
+            st.write(route)
+            st.subheader("Total Cost:")
+            st.write(cost)
 
-            # Allow user to input costs in the matrix
-            for i in range(len(tsp_solver.cities)):
-                for j in range(i + 1, len(tsp_solver.cities)):
-                    cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
-                    tsp_solver.set_cost(tsp_solver.cities[i], tsp_solver.cities[j], cost)
+            # Option to calculate legs
+            calculate_legs = st.checkbox("Calculate Legs")
+            if calculate_legs:
+                legs = len(result) - 1
+                st.subheader("Number of Legs:")
+                st.write(legs)
 
-            # Set the start city
-            start_city = st.selectbox("Select start city:", tsp_solver.cities)
-            tsp_solver.set_start_city(start_city)
-
-            if st.button("Solve TSP"):
-                try:
-                    result, cost = tsp_solver.solve_tsp()
-                    route = ' -> '.join(result)
-                    st.subheader("Optimal Path:")
-                    st.write(route)
-                    st.subheader("Total Cost:")
-                    st.write(cost)
-
-                    # Option to calculate legs
-                    calculate_legs = st.checkbox("Calculate Legs")
-                    if calculate_legs:
-                        legs = len(result) - 1
-                        st.subheader("Number of Legs:")
-                        st.write(legs)
-
-                except ValueError as e:
-                    st.error(str(e))
+        except ValueError as e:
+            st.error(str(e))
 
 if __name__ == "__main__":
     main()
