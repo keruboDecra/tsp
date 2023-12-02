@@ -76,7 +76,7 @@ def main():
 
     # Sidebar
     st.sidebar.header("Options")
-    option = st.sidebar.selectbox("Select an option", ["Add City", "Set Start City", "Set Cost Matrix", "Solve TSP"])
+    option = st.sidebar.selectbox("Select an option", ["Add City", "Set Cost Matrix"])
 
     # Main content
     if option == "Add City":
