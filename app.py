@@ -4,43 +4,48 @@ import numpy as np
 from itertools import permutations
 
 class TSPSolver:
-    def __init__(self, session_state):
-        self.session_state = session_state
-        if not hasattr(self.session_state, 'cities'):
-            self.session_state.cities = []
-        self.start_city = None
-        self.cost_matrix = None
+    def __init__(self):
+        self.session_state = st.session_state
+        if not hasattr(self.session_state, 'tsp_solver'):
+            self.session_state.tsp_solver = self.create_tsp_solver()
+            
+    def create_tsp_solver(self):
+        tsp_solver = TSPSolverBase()
+        tsp_solver.cities = []
+        tsp_solver.start_city = None
+        tsp_solver.cost_matrix = None
+        return tsp_solver
 
     def add_city(self, city):
-        self.session_state.cities.append(city)
+        self.session_state.tsp_solver.cities.append(city)
 
     def set_start_city(self, city):
-        if city in self.session_state.cities:
-            self.start_city = city
+        if city in self.session_state.tsp_solver.cities:
+            self.session_state.tsp_solver.start_city = city
         else:
             raise ValueError(f"City '{city}' not found in the list of added cities. Please add the city first.")
 
     def set_cost(self, city1, city2, cost):
-        index1 = self.session_state.cities.index(city1)
-        index2 = self.session_state.cities.index(city2)
-        self.cost_matrix.at[city1, city2] = cost
-        self.cost_matrix.at[city2, city1] = cost
+        index1 = self.session_state.tsp_solver.cities.index(city1)
+        index2 = self.session_state.tsp_solver.cities.index(city2)
+        self.session_state.tsp_solver.cost_matrix.at[city1, city2] = cost
+        self.session_state.tsp_solver.cost_matrix.at[city2, city1] = cost
 
     def solve_tsp(self):
         # Generate all possible permutations of cities
-        all_permutations = permutations(self.session_state.cities)
+        all_permutations = permutations(self.session_state.tsp_solver.cities)
 
         # Calculate the total cost for each permutation
         total_costs = []
         for perm in all_permutations:
             cost = 0
             for i in range(len(perm) - 1):
-                cost += self.cost_matrix.at[perm[i], perm[i + 1]]
-            cost += self.cost_matrix.at[perm[-1], perm[0]]  # Return to the starting city
+                cost += self.session_state.tsp_solver.cost_matrix.at[perm[i], perm[i + 1]]
+            cost += self.session_state.tsp_solver.cost_matrix.at[perm[-1], perm[0]]  # Return to the starting city
 
             # Consider the starting city
-            if self.start_city:
-                cost += self.cost_matrix.at[self.start_city, perm[0]]
+            if self.session_state.tsp_solver.start_city:
+                cost += self.session_state.tsp_solver.cost_matrix.at[self.session_state.tsp_solver.start_city, perm[0]]
 
             total_costs.append((perm + (perm[0],), cost))  # Append the starting city to the permutation
 
@@ -49,6 +54,9 @@ class TSPSolver:
 
         return min_permutation, min_cost
 
+class TSPSolverBase:
+    pass
+
 def create_matrix_table(cities):
     size = len(cities)
     matrix = pd.DataFrame(np.zeros((size, size), dtype=float), index=cities, columns=cities)
@@ -56,11 +64,9 @@ def create_matrix_table(cities):
 
 # Streamlit app
 def main():
-    session_state = st.session_state
-    if not hasattr(session_state, 'tsp_solver'):
-        session_state.tsp_solver = TSPSolver(session_state)
-
     st.title("Traveling Salesman Problem Solver")
+
+    tsp_solver = TSPSolver()
 
     # Sidebar
     st.sidebar.header("Options")
@@ -70,35 +76,37 @@ def main():
     if option == "Add City":
         city = st.text_input("Enter city name:")
         if st.button("Add City"):
-            session_state.tsp_solver.add_city(city)
+            tsp_solver.add_city(city)
             st.success(f"City '{city}' added successfully!")
 
     elif option == "Set Cost Matrix":
-        if session_state.tsp_solver.session_state.cities:
-            session_state.tsp_solver.cost_matrix = create_matrix_table(session_state.tsp_solver.session_state.cities)
-            st.table(session_state.tsp_solver.cost_matrix)
+        if tsp_solver.session_state.tsp_solver.cities:
+            if not hasattr(tsp_solver.session_state.tsp_solver, 'cost_matrix') or tsp_solver.session_state.tsp_solver.cost_matrix is None:
+                tsp_solver.session_state.tsp_solver.cost_matrix = create_matrix_table(tsp_solver.session_state.tsp_solver.cities)
+
+            st.table(tsp_solver.session_state.tsp_solver.cost_matrix)
 
             # Allow user to input costs in the matrix
-            for i in range(len(session_state.tsp_solver.session_state.cities)):
-                for j in range(i + 1, len(session_state.tsp_solver.session_state.cities)):
-                    cost = st.number_input(f"Enter cost between {session_state.tsp_solver.session_state.cities[i]} and {session_state.tsp_solver.session_state.cities[j]}:")
-                    session_state.tsp_solver.set_cost(session_state.tsp_solver.session_state.cities[i], session_state.tsp_solver.session_state.cities[j], cost)
+            for i in range(len(tsp_solver.session_state.tsp_solver.cities)):
+                for j in range(i + 1, len(tsp_solver.session_state.tsp_solver.cities)):
+                    cost = st.number_input(f"Enter cost between {tsp_solver.session_state.tsp_solver.cities[i]} and {tsp_solver.session_state.tsp_solver.cities[j]}:")
+                    tsp_solver.set_cost(tsp_solver.session_state.tsp_solver.cities[i], tsp_solver.session_state.tsp_solver.cities[j], cost)
 
             if st.button("Set Start City"):
-                if session_state.tsp_solver.session_state.cities:
-                    start_city = st.selectbox("Select start city:", session_state.tsp_solver.session_state.cities)
+                if tsp_solver.session_state.tsp_solver.cities:
+                    start_city = st.selectbox("Select start city:", tsp_solver.session_state.tsp_solver.cities)
                     try:
-                        session_state.tsp_solver.set_start_city(start_city)
+                        tsp_solver.set_start_city(start_city)
                         st.success(f"Start city set to '{start_city}' successfully!")
                     except ValueError as e:
                         st.error(str(e))
                 else:
                     st.warning("Please add cities first.")
 
-            if session_state.tsp_solver.start_city:
+            if tsp_solver.session_state.tsp_solver.start_city:
                 if st.button("Solve TSP"):
                     try:
-                        result, cost = session_state.tsp_solver.solve_tsp()
+                        result, cost = tsp_solver.solve_tsp()
                         route = ' -> '.join(result)
                         st.subheader("Optimal Path:")
                         st.write(route)
@@ -116,9 +124,9 @@ def main():
                         st.error(str(e))
 
     # Display added cities
-    if session_state.tsp_solver.session_state.cities:
+    if tsp_solver.session_state.tsp_solver.cities:
         st.sidebar.subheader("Added Cities:")
-        st.sidebar.write(", ".join(session_state.tsp_solver.session_state.cities))
+        st.sidebar.write(", ".join(tsp_solver.session_state.tsp_solver.cities))
 
 if __name__ == "__main__":
     main()
