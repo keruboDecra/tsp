@@ -96,9 +96,8 @@ def main():
         st.subheader("Added Cities Matrix:")
         st.write(create_matrix_table(tsp_solver.cities))
 
-    if option == "Set Cost Matrix":
-        st.subheader("Set Cost Matrix")
-        if tsp_solver.cities:
+        if option == "Set Cost Matrix":
+            st.subheader("Set Cost Matrix")
             tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
             st.table(tsp_solver.cost_matrix)
 
