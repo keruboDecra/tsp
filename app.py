@@ -59,10 +59,10 @@ def main():
     st.title("Traveling Salesman Problem Solver")
 
     attempts = st.session_state.get("attempts", [])
-    selected_attempt = st.sidebar.selectbox("Select attempt", [f"Attempt {i+1}" for i in range(len(attempts))] + ["New Attempt"])
+    selected_attempt = st.selectbox("Select attempt", [f"Attempt {i+1}" for i in range(len(attempts))] + ["New Attempt"])
 
     # Delete button
-    if st.sidebar.button("Delete Attempt Input") and selected_attempt != "New Attempt":
+    if st.button("Delete Attempt") and selected_attempt != "New Attempt":
         attempts = [attempt for i, attempt in enumerate(attempts) if i != int(selected_attempt.split()[-1]) - 1]
         st.session_state.attempts = attempts
         selected_attempt = "New Attempt"  # Reset to a new attempt after deletion
@@ -74,12 +74,12 @@ def main():
     else:
         tsp_solver = attempts[int(selected_attempt.split()[-1]) - 1]
 
-    # Sidebar
+    # Main content
     st.sidebar.header("Options")
     option = st.sidebar.selectbox("Select an option", ["Add City", "Set Cost Matrix"])
 
-    # Main content
     if option == "Add City":
+        st.subheader("Add City")
         city = st.text_input("Enter city name:")
         if st.button("Add City"):
             try:
@@ -89,6 +89,7 @@ def main():
                 st.error(str(e))
 
     elif option == "Set Cost Matrix":
+        st.subheader("Set Cost Matrix")
         if tsp_solver.cities:
             tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
             st.table(tsp_solver.cost_matrix)
