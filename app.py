@@ -1,6 +1,6 @@
 import streamlit as st
-import numpy as np
 import pandas as pd
+import numpy as np
 from itertools import permutations
 
 class TSPSolver:
@@ -49,63 +49,55 @@ def create_matrix_table(cities):
     matrix = pd.DataFrame(np.zeros((size, size), dtype=float), index=cities, columns=cities)
     return matrix
 
-def render_matrix_table(matrix):
-    st.dataframe(matrix.style.highlight_max(axis=0, color='lightgreen').highlight_max(axis=1, color='lightgreen'))
-
-def input_matrix_values(matrix, cities):
-    for i in range(len(cities)):
-        for j in range(i + 1, len(cities)):
-            cost = st.number_input(f"Enter cost between {cities[i]} and {cities[j]}:", min_value=0.0)
-            matrix.at[cities[i], cities[j]] = cost
-            matrix.at[cities[j], cities[i]] = cost
-    return matrix
-
+# Streamlit app
 def main():
-    st.title("TSP Solver")
+    st.title("Traveling Salesman Problem Solver")
 
     tsp_solver = TSPSolver()
-    session_state = st.session_state
 
-    if 'cities' not in session_state:
-        session_state.cities = []
+    # Sidebar
+    st.sidebar.header("Options")
+    option = st.sidebar.selectbox("Select an option", ["Add City", "Set Start City", "Set Cost Matrix", "Solve TSP"])
 
-    if 'cost_matrix' not in session_state:
-        session_state.cost_matrix = None
+    # Main content
+    if option == "Add City":
+        city = st.text_input("Enter city name:")
+        if st.button("Add City"):
+            tsp_solver.add_city(city)
 
-    while True:
-        st.sidebar.header("Menu")
-        option = st.sidebar.selectbox("Choose an option:", ["Add City", "Set Start City", "Set Cost Matrix", "Solve TSP", "Exit"])
-
-        if option == "Add City":
-            city = st.text_input("Enter city name:")
-            if city:
-                session_state.cities.append(city)
-        elif option == "Set Start City":
-            start_city = st.selectbox("Select start city:", session_state.cities, index=0)
+    elif option == "Set Start City":
+        start_city = st.text_input("Enter start city:")
+        if st.button("Set Start City"):
             tsp_solver.set_start_city(start_city)
-        elif option == "Set Cost Matrix":
-            if session_state.cities:
-                if session_state.cost_matrix is None:
-                    session_state.cost_matrix = create_matrix_table(session_state.cities)
 
-                render_matrix_table(session_state.cost_matrix)
-                session_state.cost_matrix = input_matrix_values(session_state.cost_matrix, session_state.cities)
-                render_matrix_table(session_state.cost_matrix)
-            else:
-                st.warning("Please add cities first.")
-        elif option == "Solve TSP":
-            if session_state.cost_matrix is not None:
-                tsp_solver.cities = session_state.cities
-                tsp_solver.cost_matrix = session_state.cost_matrix
+    elif option == "Set Cost Matrix":
+        if tsp_solver.cities:
+            tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
+            st.table(tsp_solver.cost_matrix)
 
-                result, cost = tsp_solver.solve_tsp()
-                route = ' -> '.join(result)
-                st.success(f"Optimal Path: {route}")
-                st.success(f"Total Cost: {cost}")
-            else:
-                st.warning("Please set the cost matrix first.")
-        elif option == "Exit":
-            break
+            # Allow user to input costs in the matrix
+            for i in range(len(tsp_solver.cities)):
+                for j in range(i + 1, len(tsp_solver.cities)):
+                    cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
+                    tsp_solver.set_cost(tsp_solver.cities[i], tsp_solver.cities[j], cost)
+
+    elif option == "Solve TSP":
+        if tsp_solver.cost_matrix is not None:
+            result, cost = tsp_solver.solve_tsp()
+            route = ' -> '.join(result)
+            st.subheader("Optimal Path:")
+            st.write(route)
+            st.subheader("Total Cost:")
+            st.write(cost)
+
+            # Option to calculate legs
+            calculate_legs = st.checkbox("Calculate Legs")
+            if calculate_legs:
+                legs = len(result) - 1
+                st.subheader("Number of Legs:")
+                st.write(legs)
+
+    st.sidebar.text("")
 
 if __name__ == "__main__":
     main()
