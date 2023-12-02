@@ -77,7 +77,7 @@ def main():
 
     # Add City section
     st.subheader("Add City")
-    city = st.text_input("Enter city name:")
+    city = st.text_input("Enter place name:")
     if st.button("Add City"):
         try:
             tsp_solver.add_city(city)
@@ -103,7 +103,7 @@ def main():
                 matrix_placeholder.table(tsp_solver.cost_matrix)
 
         # Set the start city
-        start_city = st.selectbox("Select start city:", tsp_solver.cities)
+        start_city = st.selectbox("Select start place:", tsp_solver.cities)
         tsp_solver.set_start_city(start_city)
 
         if st.button("Solve TSP"):
