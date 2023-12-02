@@ -75,14 +75,14 @@ def main():
     else:
         tsp_solver = attempts[int(selected_attempt.split()[-1]) - 1]
 
+    # Main content
+    option = st.selectbox("Select an option", ["Add City", "Set Cost Matrix"])
+
     # Display added cities as a matrix
     if tsp_solver.cities:
         st.subheader("Added Cities Matrix:")
         st.write(create_matrix_table(tsp_solver.cities))
 
-    option = st.selectbox("Select an option", ["Add City", "Set Cost Matrix"])
-
-    # Main content
     if option == "Add City":
         st.subheader("Add City")
         city = st.text_input("Enter city name:")
