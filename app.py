@@ -64,11 +64,13 @@ def main():
     st.title("TSP Solver")
 
     tsp_solver = TSPSolver()
+    session_state = st.session_state
 
-    # Create dynamic output areas
-    city_input_container = st.empty()
-    start_city_container = st.empty()
-    cost_matrix_container = st.empty()
+    if 'cities' not in session_state:
+        session_state.cities = []
+
+    if 'cost_matrix' not in session_state:
+        session_state.cost_matrix = None
 
     while True:
         st.sidebar.header("Menu")
@@ -77,20 +79,25 @@ def main():
         if option == "Add City":
             city = st.text_input("Enter city name:")
             if city:
-                tsp_solver.add_city(city)
+                session_state.cities.append(city)
         elif option == "Set Start City":
-            start_city = st.selectbox("Select start city:", tsp_solver.cities, index=0)
+            start_city = st.selectbox("Select start city:", session_state.cities, index=0)
             tsp_solver.set_start_city(start_city)
         elif option == "Set Cost Matrix":
-            if tsp_solver.cities:
-                tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
-                render_matrix_table(tsp_solver.cost_matrix)
-                tsp_solver.cost_matrix = input_matrix_values(tsp_solver.cost_matrix, tsp_solver.cities)
-                render_matrix_table(tsp_solver.cost_matrix)
+            if session_state.cities:
+                if session_state.cost_matrix is None:
+                    session_state.cost_matrix = create_matrix_table(session_state.cities)
+
+                render_matrix_table(session_state.cost_matrix)
+                session_state.cost_matrix = input_matrix_values(session_state.cost_matrix, session_state.cities)
+                render_matrix_table(session_state.cost_matrix)
             else:
                 st.warning("Please add cities first.")
         elif option == "Solve TSP":
-            if tsp_solver.cost_matrix is not None:
+            if session_state.cost_matrix is not None:
+                tsp_solver.cities = session_state.cities
+                tsp_solver.cost_matrix = session_state.cost_matrix
+
                 result, cost = tsp_solver.solve_tsp()
                 route = ' -> '.join(result)
                 st.success(f"Optimal Path: {route}")
