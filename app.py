@@ -115,16 +115,19 @@ def main():
                 st.subheader("Total Cost:")
                 st.write(cost)
 
-                # Display the step-by-step summation of leg costs for the optimal path
-                leg_sum_steps = []
-                for i in range(len(result) - 1):
-                    leg_cost = tsp_solver.cost_matrix.at[result[i], result[i + 1]]
-                    leg_sum_steps.append(f"{leg_cost:.2f} + ")
-                leg_sum_steps.append(f"{tsp_solver.cost_matrix.at[result[-1], result[0]]:.2f} = ")
-                leg_sum = sum([tsp_solver.cost_matrix.at[result[i], result[i + 1]] for i in range(len(result) - 1)])
-                leg_sum_steps.append(f"{leg_sum:.2f}")
-                st.subheader("Step-by-step Summation of Leg Costs:")
-                st.write(" ".join(leg_sum_steps))
+                # Checkbox to show/hide the step-by-step summation of leg costs
+                show_leg_costs = st.checkbox("Show Leg Costs")
+                if show_leg_costs:
+                    # Display the step-by-step summation of leg costs for the optimal path
+                    leg_sum_steps = []
+                    for i in range(len(result) - 1):
+                        leg_cost = tsp_solver.cost_matrix.at[result[i], result[i + 1]]
+                        leg_sum_steps.append(f"{leg_cost:.2f} + ")
+                    leg_sum_steps.append(f"{tsp_solver.cost_matrix.at[result[-1], result[0]]:.2f} = ")
+                    leg_sum = sum([tsp_solver.cost_matrix.at[result[i], result[i + 1]] for i in range(len(result) - 1)])
+                    leg_sum_steps.append(f"{leg_sum:.2f}")
+                    st.subheader("Step-by-step Summation of Leg Costs:")
+                    st.write(" ".join(leg_sum_steps))
 
             except ValueError as e:
                 st.error(str(e))
