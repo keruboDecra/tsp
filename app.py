@@ -34,23 +34,20 @@ class TSPSolver:
         total_costs = []
         for perm in all_permutations:
             cost = 0
-            leg_costs = []
             for i in range(len(perm) - 1):
-                leg_cost = self.cost_matrix.at[perm[i], perm[i + 1]]
-                leg_costs.append(leg_cost)
-                cost += leg_cost
+                cost += self.cost_matrix.at[perm[i], perm[i + 1]]
             cost += self.cost_matrix.at[perm[-1], perm[0]]  # Return to the starting city
 
             # Consider the user-selected starting city
             if self.start_city:
                 cost += self.cost_matrix.at[self.start_city, perm[0]]
 
-            total_costs.append((perm + (perm[0],), leg_costs, cost))  # Append the starting city to the permutation
+            total_costs.append((perm + (perm[0],), cost))  # Append the starting city to the permutation
 
         # Find the permutation with the minimum total cost
-        min_permutation, min_leg_costs, min_cost = min(total_costs, key=lambda x: x[2])
+        min_permutation, min_cost = min(total_costs, key=lambda x: x[1])
 
-        return min_permutation, min_leg_costs, min_cost
+        return min_permutation, min_cost
 
 def create_matrix_table(cities):
     size = len(cities)
@@ -111,19 +108,23 @@ def main():
 
         if st.button("Solve TSP"):
             try:
-                result, leg_costs, cost = tsp_solver.solve_tsp()
+                result, cost = tsp_solver.solve_tsp()
                 route = ' -> '.join(result)
                 st.subheader("Optimal Path:")
                 st.write(route)
-                st.subheader("Leg Costs:")
-                st.write(leg_costs)
                 st.subheader("Total Cost:")
                 st.write(cost)
-                st.subheader("Summation of Leg Costs:")
-                cumulative_sum = 0
-                for i, leg_cost in enumerate(leg_costs):
-                    cumulative_sum += leg_cost
-                    st.write(f"Step {i + 1}: {cumulative_sum}")
+
+                # Display the step-by-step summation of leg costs for the optimal path
+                leg_sum_steps = []
+                for i in range(len(result) - 1):
+                    leg_cost = tsp_solver.cost_matrix.at[result[i], result[i + 1]]
+                    leg_sum_steps.append(f"{leg_cost:.2f} + ")
+                leg_sum_steps.append(f"{tsp_solver.cost_matrix.at[result[-1], result[0]]:.2f} = ")
+                leg_sum = sum([tsp_solver.cost_matrix.at[result[i], result[i + 1]] for i in range(len(result) - 1)])
+                leg_sum_steps.append(f"{leg_sum:.2f}")
+                st.subheader("Step-by-step Summation of Leg Costs:")
+                st.write(" ".join(leg_sum_steps))
 
             except ValueError as e:
                 st.error(str(e))
