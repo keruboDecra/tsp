@@ -113,7 +113,7 @@ def main():
                 st.subheader("Optimal Path:")
                 st.write(route)
                 st.subheader("Total Cost:")
-                st.write(cost)             st.write(cost)
+                st.write(cost)            
 
 
                 # Option to calculate legs
