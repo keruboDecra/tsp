@@ -63,14 +63,17 @@ def main():
 
     # Delete button
     if st.sidebar.button("Delete Attempt") and selected_attempt != "New Attempt":
-        del attempts[int(selected_attempt.split()[-1]) - 1]
-        st.session_state.attempts = attempts
+        del_index = int(selected_attempt.split()[-1]) - 1
+        attempts.pop(del_index)
+        new_attempts = {f"Attempt {i+1}": attempt for i, attempt in enumerate(attempts)}
+        st.session_state.attempts = new_attempts
         selected_attempt = "New Attempt"  # Reset to a new attempt after deletion
 
     if selected_attempt == "New Attempt":
         tsp_solver = TSPSolver()
         attempts.append(tsp_solver)
-        st.session_state.attempts = attempts
+        new_attempts = {f"Attempt {i+1}": attempt for i, attempt in enumerate(attempts)}
+        st.session_state.attempts = new_attempts
     else:
         tsp_solver = attempts[int(selected_attempt.split()[-1]) - 1]
 
