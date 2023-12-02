@@ -21,8 +21,8 @@ class TSPSolver:
             raise ValueError(f"City '{city}' not found in the list of added cities. Please add the city first.")
 
     def set_cost(self, city1, city2, cost):
-        if self.cost_matrix is None:
-            self.cost_matrix = pd.DataFrame(0, index=self.cities, columns=self.cities)
+        index1 = self.cities.index(city1)
+        index2 = self.cities.index(city2)
         self.cost_matrix.at[city1, city2] = cost
         self.cost_matrix.at[city2, city1] = cost
 
@@ -48,6 +48,11 @@ class TSPSolver:
         min_permutation, min_cost = min(total_costs, key=lambda x: x[1])
 
         return min_permutation, min_cost
+
+def create_matrix_table(cities):
+    size = len(cities)
+    matrix = pd.DataFrame(np.zeros((size, size), dtype=float), index=cities, columns=cities)
+    return matrix
 
 # Streamlit app
 def main():
@@ -83,15 +88,19 @@ def main():
     # Set Matrix Costs section
     st.subheader("Set Matrix Costs")
     if tsp_solver.cities:
+        tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
+
+      # Create an empty placeholder for the matrix
+        matrix_placeholder = st.empty()
+        
         # Allow user to input costs in the matrix
         for i in range(len(tsp_solver.cities)):
             for j in range(i + 1, len(tsp_solver.cities)):
                 cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
                 tsp_solver.set_cost(tsp_solver.cities[i], tsp_solver.cities[j], cost)
-
-        # Set the start city
-        start_city = st.selectbox("Select start city:", tsp_solver.cities)
-        tsp_solver.set_start_city(start_city)
+                
+                # Dynamically update the matrix table
+                matrix_placeholder.table(tsp_solver.cost_matrix)
 
         if st.button("Solve TSP"):
             try:
@@ -111,11 +120,6 @@ def main():
 
             except ValueError as e:
                 st.error(str(e))
-
-    # Display matrix table
-    if tsp_solver.cities and tsp_solver.cost_matrix is not None:
-        st.subheader("Cost Matrix:")
-        st.table(tsp_solver.cost_matrix)
 
 if __name__ == "__main__":
     main()
