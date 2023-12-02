@@ -64,11 +64,16 @@ def main():
         city = st.text_input("Enter city name:")
         if st.button("Add City"):
             tsp_solver.add_city(city)
+            st.success(f"City '{city}' added successfully!")
 
     elif option == "Set Start City":
         start_city = st.text_input("Enter start city:")
         if st.button("Set Start City"):
-            tsp_solver.set_start_city(start_city)
+            try:
+                tsp_solver.set_start_city(start_city)
+                st.success(f"Start city set to '{start_city}' successfully!")
+            except ValueError:
+                st.error(f"City '{start_city}' not found in the list of added cities. Please add the city first.")
 
     elif option == "Set Cost Matrix":
         if tsp_solver.cities:
@@ -80,6 +85,8 @@ def main():
                 for j in range(i + 1, len(tsp_solver.cities)):
                     cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
                     tsp_solver.set_cost(tsp_solver.cities[i], tsp_solver.cities[j], cost)
+
+            st.success("Cost matrix set successfully!")
 
     elif option == "Solve TSP":
         if tsp_solver.cost_matrix is not None:
@@ -97,7 +104,10 @@ def main():
                 st.subheader("Number of Legs:")
                 st.write(legs)
 
-    st.sidebar.text("")
+    # Display added cities
+    if tsp_solver.cities:
+        st.sidebar.subheader("Added Cities:")
+        st.sidebar.write(", ".join(tsp_solver.cities))
 
 if __name__ == "__main__":
     main()
