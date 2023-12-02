@@ -15,10 +15,10 @@ class TSPSolver:
         self.cities.append(city)
 
     def set_start_city(self, city):
-        if city in self.cities:
-            self.start_city = city
-        else:
-            raise ValueError(f"City '{city}' not found in the list of added cities. Please add the city first.")
+            if city in self.cities:
+                self.start_city = city
+            else:
+                raise ValueError(f"City '{city}' not found in the list of added cities. Please add the city first.")
 
     def set_cost(self, city1, city2, cost):
         index1 = self.cities.index(city1)
@@ -102,14 +102,20 @@ def main():
                 # Dynamically update the matrix table
                 matrix_placeholder.table(tsp_solver.cost_matrix)
 
-        if st.button("Solve TSP"):
-            try:
-                result, cost = tsp_solver.solve_tsp()
-                route = ' -> '.join(result)
-                st.subheader("Optimal Path:")
-                st.write(route)
-                st.subheader("Total Cost:")
-                st.write(cost)
+
+            # Set the start city
+            start_city = st.selectbox("Select start city:", tsp_solver.cities)
+            tsp_solver.set_start_city(start_city)
+
+            if st.button("Solve TSP"):
+                try:
+                    result, cost = tsp_solver.solve_tsp()
+                    route = ' -> '.join(result)
+                    st.subheader("Optimal Path:")
+                    st.write(route)
+                    st.subheader("Total Cost:")
+                    st.write(cost)
+
 
                 # Option to calculate legs
                 calculate_legs = st.checkbox("Calculate Legs")
