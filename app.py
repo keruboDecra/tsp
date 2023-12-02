@@ -78,6 +78,11 @@ def main():
     st.sidebar.header("Options")
     option = st.sidebar.selectbox("Select an option", ["Add City", "Set Cost Matrix"])
 
+    # Display added cities as a matrix
+    if tsp_solver.cities:
+        st.subheader("Added Cities Matrix:")
+        st.write(create_matrix_table(tsp_solver.cities))
+
     if option == "Add City":
         st.subheader("Add City")
         city = st.text_input("Enter city name:")
@@ -129,11 +134,6 @@ def main():
 
                 except ValueError as e:
                     st.error(str(e))
-
-    # Display added cities
-    if tsp_solver.cities:
-        st.sidebar.subheader("Added Cities:")
-        st.sidebar.write(", ".join(tsp_solver.cities))
 
 if __name__ == "__main__":
     main()
