@@ -59,10 +59,14 @@ def main():
     st.title("Traveling Salesman Problem Solver")
 
     attempts = st.session_state.get("attempts", [])
-    selected_attempt = st.selectbox("Select attempt", [f"Attempt {i+1}" for i in range(len(attempts))] + ["New Attempt"])
+    
+    # Sidebar
+    st.sidebar.header("Options")
+    
+    selected_attempt = st.sidebar.selectbox("Select attempt", [f"Attempt {i+1}" for i in range(len(attempts))] + ["New Attempt"])
 
     # Delete button
-    if st.button("Delete Attempt") and selected_attempt != "New Attempt":
+    if st.sidebar.button("Delete Attempt") and selected_attempt != "New Attempt":
         attempts = [attempt for i, attempt in enumerate(attempts) if i != int(selected_attempt.split()[-1]) - 1]
         st.session_state.attempts = attempts
         selected_attempt = "New Attempt"  # Reset to a new attempt after deletion
@@ -75,7 +79,7 @@ def main():
         tsp_solver = attempts[int(selected_attempt.split()[-1]) - 1]
 
     # Main content
-    st.sidebar.header("Options")
+    st.sidebar.subheader("Options")
     option = st.sidebar.selectbox("Select an option", ["Add City", "Set Cost Matrix"])
 
     # Display added cities as a matrix
