@@ -13,6 +13,7 @@ class TSPSolver:
         self.cities.append(city)
 
     def set_start_city(self, city):
+        self.start_city = None  # Reset start_city
         if city in self.cities:
             self.start_city = city
         else:
@@ -83,6 +84,7 @@ def main():
                     cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
                     tsp_solver.set_cost(tsp_solver.cities[i], tsp_solver.cities[j], cost)
 
+            # Button to set start city
             if st.button("Set Start City"):
                 if tsp_solver.cities:
                     start_city = st.selectbox("Select start city:", tsp_solver.cities)
@@ -94,6 +96,7 @@ def main():
                 else:
                     st.warning("Please add cities first.")
 
+            # Button to solve TSP
             if st.button("Solve TSP"):
                 try:
                     result, cost = tsp_solver.solve_tsp()
