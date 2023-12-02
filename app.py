@@ -49,9 +49,13 @@ class TSPSolver:
 
         return min_permutation, min_cost
 
-def create_matrix_table(cities):
+def create_matrix_table(cities, cost_matrix):
     size = len(cities)
     matrix = pd.DataFrame(np.zeros((size, size), dtype=float), index=cities, columns=cities)
+    for i in range(len(cities)):
+        for j in range(i + 1, len(cities)):
+            matrix.at[cities[i], cities[j]] = cost_matrix.at[cities[i], cities[j]]
+            matrix.at[cities[j], cities[i]] = cost_matrix.at[cities[j], cities[i]]
     return matrix
 
 # Streamlit app
@@ -85,13 +89,11 @@ def main():
         except ValueError as e:
             st.error(str(e))
 
-    # Set Matrix Costs section
-    st.subheader("Set Matrix Costs")
+    # Display the matrix table
     if tsp_solver.cities:
-        tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
-
-        # Create an empty placeholder for the matrix
-        matrix_placeholder = st.empty()
+        st.subheader("Cost Matrix")
+        tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities, tsp_solver.cost_matrix)
+        st.table(tsp_solver.cost_matrix)
 
         # Allow user to input costs in the matrix
         for i in range(len(tsp_solver.cities)):
