@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from itertools import permutations
+
 class TSPSolver:
     def __init__(self):
         self.cities = []
