@@ -13,7 +13,10 @@ class TSPSolver:
         self.cities.append(city)
 
     def set_start_city(self, city):
-        self.start_city = city
+        if city in self.cities:
+            self.start_city = city
+        else:
+            raise ValueError(f"City '{city}' not found in the list of added cities. Please add the city first.")
 
     def set_cost(self, city1, city2, cost):
         index1 = self.cities.index(city1)
@@ -67,13 +70,16 @@ def main():
             st.success(f"City '{city}' added successfully!")
 
     elif option == "Set Start City":
-        start_city = st.text_input("Enter start city:")
-        if st.button("Set Start City"):
-            try:
-                tsp_solver.set_start_city(start_city)
-                st.success(f"Start city set to '{start_city}' successfully!")
-            except ValueError:
-                st.error(f"City '{start_city}' not found in the list of added cities. Please add the city first.")
+        if tsp_solver.cities:
+            start_city = st.selectbox("Select start city:", tsp_solver.cities)
+            if st.button("Set Start City"):
+                try:
+                    tsp_solver.set_start_city(start_city)
+                    st.success(f"Start city set to '{start_city}' successfully!")
+                except ValueError as e:
+                    st.error(str(e))
+        else:
+            st.warning("Please add cities first.")
 
     elif option == "Set Cost Matrix":
         if tsp_solver.cities:
