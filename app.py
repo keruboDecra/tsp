@@ -71,18 +71,6 @@ def main():
             tsp_solver.add_city(city)
             st.success(f"City '{city}' added successfully!")
 
-    elif option == "Set Start City":
-        if tsp_solver.session_state.cities:
-            start_city = st.selectbox("Select start city:", tsp_solver.session_state.cities)
-            if st.button("Set Start City"):
-                try:
-                    tsp_solver.set_start_city(start_city)
-                    st.success(f"Start city set to '{start_city}' successfully!")
-                except ValueError as e:
-                    st.error(str(e))
-        else:
-            st.warning("Please add cities first.")
-
     elif option == "Set Cost Matrix":
         if tsp_solver.session_state.cities:
             tsp_solver.cost_matrix = create_matrix_table(tsp_solver.session_state.cities)
@@ -93,6 +81,17 @@ def main():
                 for j in range(i + 1, len(tsp_solver.session_state.cities)):
                     cost = st.number_input(f"Enter cost between {tsp_solver.session_state.cities[i]} and {tsp_solver.session_state.cities[j]}:")
                     tsp_solver.set_cost(tsp_solver.session_state.cities[i], tsp_solver.session_state.cities[j], cost)
+
+            if st.button("Set Start City"):
+                if tsp_solver.session_state.cities:
+                    start_city = st.selectbox("Select start city:", tsp_solver.session_state.cities)
+                    try:
+                        tsp_solver.set_start_city(start_city)
+                        st.success(f"Start city set to '{start_city}' successfully!")
+                    except ValueError as e:
+                        st.error(str(e))
+                else:
+                    st.warning("Please add cities first.")
 
             if st.button("Solve TSP"):
                 try:
