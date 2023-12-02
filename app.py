@@ -84,10 +84,6 @@ def main():
 
     # Display added cities as a matrix
     if tsp_solver.cities:
-        st.subheader("Added Cities Matrix:")
-        st.write(create_matrix_table(tsp_solver.cities))
-
-    if option == "Add City":
         st.subheader("Add City")
         city = st.text_input("Enter city name:")
         if st.button("Add City"):
@@ -97,13 +93,16 @@ def main():
             except ValueError as e:
                 st.error(str(e))
 
-    elif option == "Set Cost Matrix":
+        st.subheader("Added Cities Matrix:")
+        st.write(create_matrix_table(tsp_solver.cities))
+
+    if option == "Set Cost Matrix":
         st.subheader("Set Cost Matrix")
         if tsp_solver.cities:
             tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
             st.table(tsp_solver.cost_matrix)
 
-            # Allow user to input costs in the matrix
+            # Allow the user to input costs in the matrix
             for i in range(len(tsp_solver.cities)):
                 for j in range(i + 1, len(tsp_solver.cities)):
                     cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
