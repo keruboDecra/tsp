@@ -102,19 +102,18 @@ def main():
                 # Dynamically update the matrix table
                 matrix_placeholder.table(tsp_solver.cost_matrix)
 
+        # Set the start city
+        start_city = st.selectbox("Select start city:", tsp_solver.cities)
+        tsp_solver.set_start_city(start_city)
 
-            # Set the start city
-            start_city = st.selectbox("Select start city:", tsp_solver.cities)
-            tsp_solver.set_start_city(start_city)
-
-            if st.button("Solve TSP"):
-                try:
-                    result, cost = tsp_solver.solve_tsp()
-                    route = ' -> '.join(result)
-                    st.subheader("Optimal Path:")
-                    st.write(route)
-                    st.subheader("Total Cost:")
-                    st.write(cost)
+        if st.button("Solve TSP"):
+            try:
+                result, cost = tsp_solver.solve_tsp()
+                route = ' -> '.join(result)
+                st.subheader("Optimal Path:")
+                st.write(route)
+                st.subheader("Total Cost:")
+                st.write(cost)             st.write(cost)
 
 
                 # Option to calculate legs
