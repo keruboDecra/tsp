@@ -89,13 +89,18 @@ def main():
     st.subheader("Set Matrix Costs")
     if tsp_solver.cities:
         tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
-        st.table(tsp_solver.cost_matrix)
 
+        # Create an empty placeholder for the matrix
+        matrix_placeholder = st.empty()
+        
         # Allow user to input costs in the matrix
         for i in range(len(tsp_solver.cities)):
             for j in range(i + 1, len(tsp_solver.cities)):
                 cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
                 tsp_solver.set_cost(tsp_solver.cities[i], tsp_solver.cities[j], cost)
+                
+                # Dynamically update the matrix table
+                matrix_placeholder.table(tsp_solver.cost_matrix)
 
     if st.button("Set Start City"):
         if tsp_solver.cities:
