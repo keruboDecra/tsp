@@ -10,7 +10,10 @@ class TSPSolver:
         self.cost_matrix = None
 
     def add_city(self, city):
-        self.cities.append(city)
+        if city not in self.cities:
+            self.cities.append(city)
+        else:
+            raise ValueError(f"City '{city}' already exists. Please enter a unique city name.")
 
     def set_start_city(self, city):
         if city in self.cities:
@@ -74,8 +77,11 @@ def main():
     if option == "Add City":
         city = st.text_input("Enter city name:")
         if st.button("Add City"):
-            tsp_solver.add_city(city)
-            st.success(f"City '{city}' added successfully!")
+            try:
+                tsp_solver.add_city(city)
+                st.success(f"City '{city}' added successfully!")
+            except ValueError as e:
+                st.error(str(e))
 
     elif option == "Set Cost Matrix":
         if tsp_solver.cities:
