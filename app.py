@@ -51,13 +51,15 @@ class TSPSolver:
 
 def create_matrix_table(cities, cost_matrix):
     size = len(cities)
-    matrix = pd.DataFrame(np.zeros((size, size), dtype=float), index=cities, columns=cities)
-    if cost_matrix is not None:
+    if cost_matrix is None:
+        return pd.DataFrame(np.zeros((size, size), dtype=float), index=cities, columns=cities)
+    else:
+        matrix = pd.DataFrame(np.zeros((size, size), dtype=float), index=cities, columns=cities)
         for i in range(size):
             for j in range(i + 1, size):
-                matrix.at[cities[i], cities[j]] = cost_matrix.at[cities[i], cities[j]]
-                matrix.at[cities[j], cities[i]] = cost_matrix.at[cities[j], cities[i]]
-    return matrix
+                matrix.at[cities[i], cities[j]] = cost_matrix.at.get(cities[i], {}).get(cities[j], 0)
+                matrix.at[cities[j], cities[i]] = cost_matrix.at.get(cities[j], {}).get(cities[i], 0)
+        return matrix
 
 # Streamlit app
 def main():
