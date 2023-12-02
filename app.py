@@ -53,6 +53,7 @@ def create_matrix_table(cities):
     size = len(cities)
     matrix = pd.DataFrame(np.zeros((size, size), dtype=float), index=cities, columns=cities)
     return matrix
+
 # Streamlit app
 def main():
     st.title("Traveling Salesman Problem Solver")
@@ -91,35 +92,35 @@ def main():
 
         # Create an empty placeholder for the matrix
         matrix_placeholder = st.empty()
-        
-          # Allow user to input costs in the matrix
-            for i in range(len(tsp_solver.cities)):
-                for j in range(i + 1, len(tsp_solver.cities)):
-                    cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
-                    tsp_solver.set_cost(tsp_solver.cities[i], tsp_solver.cities[j], cost)
 
-            # Set the start city
-            start_city = st.selectbox("Select start city:", tsp_solver.cities)
-            tsp_solver.set_start_city(start_city)
+        # Allow user to input costs in the matrix
+        for i in range(len(tsp_solver.cities)):
+            for j in range(i + 1, len(tsp_solver.cities)):
+                cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
+                tsp_solver.set_cost(tsp_solver.cities[i], tsp_solver.cities[j], cost)
 
-            if st.button("Solve TSP"):
-                try:
-                    result, cost = tsp_solver.solve_tsp()
-                    route = ' -> '.join(result)
-                    st.subheader("Optimal Path:")
-                    st.write(route)
-                    st.subheader("Total Cost:")
-                    st.write(cost)
+        # Set the start city
+        start_city = st.selectbox("Select start city:", tsp_solver.cities)
+        tsp_solver.set_start_city(start_city)
 
-                    # Option to calculate legs
-                    calculate_legs = st.checkbox("Calculate Legs")
-                    if calculate_legs:
-                        legs = len(result) - 1
-                        st.subheader("Number of Legs:")
-                        st.write(legs)
+        if st.button("Solve TSP"):
+            try:
+                result, cost = tsp_solver.solve_tsp()
+                route = ' -> '.join(result)
+                st.subheader("Optimal Path:")
+                st.write(route)
+                st.subheader("Total Cost:")
+                st.write(cost)
 
-                except ValueError as e:
-                    st.error(str(e))
+                # Option to calculate legs
+                calculate_legs = st.checkbox("Calculate Legs")
+                if calculate_legs:
+                    legs = len(result) - 1
+                    st.subheader("Number of Legs:")
+                    st.write(legs)
+
+            except ValueError as e:
+                st.error(str(e))
 
 if __name__ == "__main__":
     main()
