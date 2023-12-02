@@ -62,7 +62,7 @@ def main():
     selected_attempt = st.sidebar.selectbox("Select attempt", [f"Attempt {i+1}" for i in range(len(attempts))] + ["New Attempt"])
 
     # Delete button
-    if st.sidebar.button("Delete Attempt") and selected_attempt != "New Attempt":
+    if st.sidebar.button("Delete Attempt Input") and selected_attempt != "New Attempt":
         attempts = [attempt for i, attempt in enumerate(attempts) if i != int(selected_attempt.split()[-1]) - 1]
         st.session_state.attempts = attempts
         selected_attempt = "New Attempt"  # Reset to a new attempt after deletion
