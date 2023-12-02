@@ -65,6 +65,11 @@ def main():
 
     tsp_solver = TSPSolver()
 
+    # Create dynamic output areas
+    city_input_container = st.empty()
+    start_city_container = st.empty()
+    cost_matrix_container = st.empty()
+
     while True:
         st.sidebar.header("Menu")
         option = st.sidebar.selectbox("Choose an option:", ["Add City", "Set Start City", "Set Cost Matrix", "Solve TSP", "Exit"])
