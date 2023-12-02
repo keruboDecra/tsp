@@ -14,21 +14,6 @@ class TSPSolver:
             raise ValueError(f"City '{city}' already exists. Please enter a different city name.")
         self.cities.append(city)
 
-    def delete_city(self, city):
-        if city in self.cities:
-            self.cities.remove(city)
-            # Update cost matrix accordingly if it has been initialized
-            if self.cost_matrix is not None:
-                self.cost_matrix = self.cost_matrix.drop(city, axis=0).drop(city, axis=1)
-        else:
-            raise ValueError(f"City '{city}' not found in the list of added cities.")
-
-    def delete_attempt(self, attempts, index):
-        if index < len(attempts):
-            attempts.pop(index)
-        else:
-            raise ValueError("Invalid attempt index.")
-
     def set_start_city(self, city):
         if city in self.cities:
             self.start_city = city
@@ -85,7 +70,7 @@ def main():
 
     # Sidebar
     st.sidebar.header("Options")
-    option = st.sidebar.selectbox("Select an option", ["Add City", "Delete City", "Delete Attempt", "Set Start City", "Set Cost Matrix", "Solve TSP"])
+    option = st.sidebar.selectbox("Select an option", ["Add City", "Set Start City", "Set Cost Matrix", "Solve TSP"])
 
     # Main content
     if option == "Add City":
@@ -97,32 +82,18 @@ def main():
             except ValueError as e:
                 st.error(str(e))
 
-    elif option == "Delete City":
-        city_to_delete = st.selectbox("Select city to delete:", tsp_solver.cities, key="delete_city")
-        if st.button("Delete City"):
-            try:
-                tsp_solver.delete_city(city_to_delete)
-                st.success(f"City '{city_to_delete}' deleted successfully!")
-            except ValueError as e:
-                st.error(str(e))
-
-    elif option == "Delete Attempt":
-        if st.button("Delete Attempt"):
-            try:
-                attempt_to_delete = st.selectbox("Select attempt to delete:", [f"Attempt {i+1}" for i in range(len(attempts))])
-                index_to_delete = int(attempt_to_delete.split()[-1]) - 1
-                tsp_solver.delete_attempt(attempts, index_to_delete)
-                st.session_state.attempts = attempts  # Update the attempts in the session state
-                st.success(f"Attempt {index_to_delete + 1} deleted successfully!")
-            except ValueError as e:
-                st.error(str(e))
+            # Button to delete the current attempt
+            if st.button("Delete Current Attempt"):
+                attempts.remove(tsp_solver)
+                st.session_state.attempts = attempts
+                st.success("Current attempt deleted successfully!")
 
     elif option == "Set Cost Matrix":
         if tsp_solver.cities:
             tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
             st.table(tsp_solver.cost_matrix)
 
-            # Allow user to input costs in the matrix
+            # Allow the user to input costs in the matrix
             for i in range(len(tsp_solver.cities)):
                 for j in range(i + 1, len(tsp_solver.cities)):
                     cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
