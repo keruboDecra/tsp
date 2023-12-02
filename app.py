@@ -40,7 +40,7 @@ class TSPSolver:
 
             # Consider the user-selected starting city
             if self.start_city:
-                cost -= self.cost_matrix.at[self.start_city, perm[0]]
+                cost += self.cost_matrix.at[self.start_city, perm[0]]
 
             total_costs.append((perm + (perm[0],), cost))  # Append the starting city to the permutation
 
