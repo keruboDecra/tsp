@@ -62,7 +62,7 @@ def main():
 
     # Sidebar
     st.sidebar.header("Options")
-    option = st.sidebar.selectbox("Select an option", ["Add City", "Set Start City", "Set Cost Matrix"])
+    option = st.sidebar.selectbox("Select an option", ["Add City", "Set Cost Matrix"])
 
     # Main content
     if option == "Add City":
@@ -82,17 +82,18 @@ def main():
                     cost = st.number_input(f"Enter cost between {tsp_solver.session_state.cities[i]} and {tsp_solver.session_state.cities[j]}:")
                     tsp_solver.set_cost(tsp_solver.session_state.cities[i], tsp_solver.session_state.cities[j], cost)
 
-            if st.button("Set Start City"):
-                if tsp_solver.session_state.cities:
-                    start_city = st.selectbox("Select start city:", tsp_solver.session_state.cities)
-                    try:
-                        tsp_solver.set_start_city(start_city)
-                        st.success(f"Start city set to '{start_city}' successfully!")
-                    except ValueError as e:
-                        st.error(str(e))
-                else:
-                    st.warning("Please add cities first.")
+            # Set Start City
+            if tsp_solver.session_state.cities:
+                start_city = st.selectbox("Select start city:", tsp_solver.session_state.cities)
+                try:
+                    tsp_solver.set_start_city(start_city)
+                    st.success(f"Start city set to '{start_city}' successfully!")
+                except ValueError as e:
+                    st.error(str(e))
+            else:
+                st.warning("Please add cities first.")
 
+            # Solve TSP
             if st.button("Solve TSP"):
                 try:
                     result, cost = tsp_solver.solve_tsp()
