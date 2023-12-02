@@ -62,7 +62,7 @@ def main():
 
     # Sidebar
     st.sidebar.header("Options")
-    option = st.sidebar.selectbox("Select an option", ["Add City", "Set Cost Matrix"])
+    option = st.sidebar.selectbox("Select an option", ["Add City", "Set Start City", "Set Cost Matrix"])
 
     # Main content
     if option == "Add City":
@@ -82,6 +82,7 @@ def main():
                     cost = st.number_input(f"Enter cost between {tsp_solver.session_state.cities[i]} and {tsp_solver.session_state.cities[j]}:")
                     tsp_solver.set_cost(tsp_solver.session_state.cities[i], tsp_solver.session_state.cities[j], cost)
 
+            # Button to set start city
             if st.button("Set Start City"):
                 if tsp_solver.session_state.cities:
                     start_city = st.selectbox("Select start city:", tsp_solver.session_state.cities)
@@ -93,25 +94,25 @@ def main():
                 else:
                     st.warning("Please add cities first.")
 
-            if tsp_solver.start_city:
-                if st.button("Solve TSP"):
-                    try:
-                        result, cost = tsp_solver.solve_tsp()
-                        route = ' -> '.join(result)
-                        st.subheader("Optimal Path:")
-                        st.write(route)
-                        st.subheader("Total Cost:")
-                        st.write(cost)
+            # Button to solve TSP
+            if st.button("Solve TSP"):
+                try:
+                    result, cost = tsp_solver.solve_tsp()
+                    route = ' -> '.join(result)
+                    st.subheader("Optimal Path:")
+                    st.write(route)
+                    st.subheader("Total Cost:")
+                    st.write(cost)
 
-                        # Option to calculate legs
-                        calculate_legs = st.checkbox("Calculate Legs")
-                        if calculate_legs:
-                            legs = len(result) - 1
-                            st.subheader("Number of Legs:")
-                            st.write(legs)
+                    # Option to calculate legs
+                    calculate_legs = st.checkbox("Calculate Legs")
+                    if calculate_legs:
+                        legs = len(result) - 1
+                        st.subheader("Number of Legs:")
+                        st.write(legs)
 
-                    except ValueError as e:
-                        st.error(str(e))
+                except ValueError as e:
+                    st.error(str(e))
 
     # Display added cities
     if tsp_solver.session_state.cities:
