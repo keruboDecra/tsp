@@ -115,9 +115,11 @@ def main():
                 st.subheader("Total Cost:")
                 st.write(cost)
 
-                # Display the summation of costs for the optimal path
-                st.subheader("Summation of Costs:")
-                st.write(sum(tsp_solver.cost_matrix.at[result[i], result[i + 1]] for i in range(len(result) - 1)))
+                # Display the summation of leg costs for the optimal path
+                leg_costs = [tsp_solver.cost_matrix.at[result[i], result[i + 1]] for i in range(len(result) - 1)]
+                leg_sum = sum(leg_costs)
+                st.subheader("Summation of Leg Costs:")
+                st.write(leg_sum)
 
             except ValueError as e:
                 st.error(str(e))
