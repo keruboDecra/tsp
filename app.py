@@ -116,12 +116,7 @@ def main():
                 st.write(cost)            
 
 
-                # Option to calculate legs
-                calculate_legs = st.checkbox("Calculate Legs")
-                if calculate_legs:
-                    legs = len(result) - 1
-                    st.subheader("Number of Legs:")
-                    st.write(legs)
+)
 
             except ValueError as e:
                 st.error(str(e))
