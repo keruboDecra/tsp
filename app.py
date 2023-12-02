@@ -15,10 +15,10 @@ class TSPSolver:
         self.cities.append(city)
 
     def set_start_city(self, city):
-            if city in self.cities:
-                self.start_city = city
-            else:
-                raise ValueError(f"City '{city}' not found in the list of added cities. Please add the city first.")
+        if city in self.cities:
+            self.start_city = city
+        else:
+            raise ValueError(f"City '{city}' not found in the list of added cities. Please add the city first.")
 
     def set_cost(self, city1, city2, cost):
         index1 = self.cities.index(city1)
@@ -90,15 +90,15 @@ def main():
     if tsp_solver.cities:
         tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
 
-      # Create an empty placeholder for the matrix
+        # Create an empty placeholder for the matrix
         matrix_placeholder = st.empty()
-        
+
         # Allow user to input costs in the matrix
         for i in range(len(tsp_solver.cities)):
             for j in range(i + 1, len(tsp_solver.cities)):
                 cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
                 tsp_solver.set_cost(tsp_solver.cities[i], tsp_solver.cities[j], cost)
-                
+
                 # Dynamically update the matrix table
                 matrix_placeholder.table(tsp_solver.cost_matrix)
 
@@ -113,7 +113,11 @@ def main():
                 st.subheader("Optimal Path:")
                 st.write(route)
                 st.subheader("Total Cost:")
-                st.write(cost)            
+                st.write(cost)
+
+                # Display the summation of costs for the optimal path
+                st.subheader("Summation of Costs:")
+                st.write(sum(tsp_solver.cost_matrix.at[result[i], result[i + 1]] for i in range(len(result) - 1)))
 
             except ValueError as e:
                 st.error(str(e))
