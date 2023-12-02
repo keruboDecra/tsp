@@ -115,9 +115,6 @@ def main():
                 st.subheader("Total Cost:")
                 st.write(cost)            
 
-
-)
-
             except ValueError as e:
                 st.error(str(e))
 
