@@ -4,8 +4,8 @@ import numpy as np
 from itertools import permutations
 
 class TSPSolver:
-    def __init__(self):
-        self.session_state = st.session_state
+    def __init__(self, session_state):
+        self.session_state = session_state
         if not hasattr(self.session_state, 'cities'):
             self.session_state.cities = []
         self.start_city = None
@@ -56,9 +56,11 @@ def create_matrix_table(cities):
 
 # Streamlit app
 def main():
-    st.title("Traveling Salesman Problem Solver")
+    session_state = st.session_state
+    if not hasattr(session_state, 'tsp_solver'):
+        session_state.tsp_solver = TSPSolver(session_state)
 
-    tsp_solver = TSPSolver()
+    st.title("Traveling Salesman Problem Solver")
 
     # Sidebar
     st.sidebar.header("Options")
@@ -68,35 +70,35 @@ def main():
     if option == "Add City":
         city = st.text_input("Enter city name:")
         if st.button("Add City"):
-            tsp_solver.add_city(city)
+            session_state.tsp_solver.add_city(city)
             st.success(f"City '{city}' added successfully!")
 
     elif option == "Set Cost Matrix":
-        if tsp_solver.session_state.cities:
-            tsp_solver.cost_matrix = create_matrix_table(tsp_solver.session_state.cities)
-            st.table(tsp_solver.cost_matrix)
+        if session_state.tsp_solver.session_state.cities:
+            session_state.tsp_solver.cost_matrix = create_matrix_table(session_state.tsp_solver.session_state.cities)
+            st.table(session_state.tsp_solver.cost_matrix)
 
             # Allow user to input costs in the matrix
-            for i in range(len(tsp_solver.session_state.cities)):
-                for j in range(i + 1, len(tsp_solver.session_state.cities)):
-                    cost = st.number_input(f"Enter cost between {tsp_solver.session_state.cities[i]} and {tsp_solver.session_state.cities[j]}:")
-                    tsp_solver.set_cost(tsp_solver.session_state.cities[i], tsp_solver.session_state.cities[j], cost)
+            for i in range(len(session_state.tsp_solver.session_state.cities)):
+                for j in range(i + 1, len(session_state.tsp_solver.session_state.cities)):
+                    cost = st.number_input(f"Enter cost between {session_state.tsp_solver.session_state.cities[i]} and {session_state.tsp_solver.session_state.cities[j]}:")
+                    session_state.tsp_solver.set_cost(session_state.tsp_solver.session_state.cities[i], session_state.tsp_solver.session_state.cities[j], cost)
 
             if st.button("Set Start City"):
-                if tsp_solver.session_state.cities:
-                    start_city = st.selectbox("Select start city:", tsp_solver.session_state.cities)
+                if session_state.tsp_solver.session_state.cities:
+                    start_city = st.selectbox("Select start city:", session_state.tsp_solver.session_state.cities)
                     try:
-                        tsp_solver.set_start_city(start_city)
+                        session_state.tsp_solver.set_start_city(start_city)
                         st.success(f"Start city set to '{start_city}' successfully!")
                     except ValueError as e:
                         st.error(str(e))
                 else:
                     st.warning("Please add cities first.")
 
-            if tsp_solver.start_city:
+            if session_state.tsp_solver.start_city:
                 if st.button("Solve TSP"):
                     try:
-                        result, cost = tsp_solver.solve_tsp()
+                        result, cost = session_state.tsp_solver.solve_tsp()
                         route = ' -> '.join(result)
                         st.subheader("Optimal Path:")
                         st.write(route)
@@ -114,9 +116,9 @@ def main():
                         st.error(str(e))
 
     # Display added cities
-    if tsp_solver.session_state.cities:
+    if session_state.tsp_solver.session_state.cities:
         st.sidebar.subheader("Added Cities:")
-        st.sidebar.write(", ".join(tsp_solver.session_state.cities))
+        st.sidebar.write(", ".join(session_state.tsp_solver.session_state.cities))
 
 if __name__ == "__main__":
     main()
