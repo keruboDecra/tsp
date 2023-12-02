@@ -52,10 +52,13 @@ class TSPSolver:
 def create_matrix_table(cities, cost_matrix):
     size = len(cities)
     matrix = pd.DataFrame(np.zeros((size, size), dtype=float), index=cities, columns=cities)
-    for i in range(len(cities)):
-        for j in range(i + 1, len(cities)):
+    
+    # Fill the matrix with costs
+    for i in range(size):
+        for j in range(i + 1, size):
             matrix.at[cities[i], cities[j]] = cost_matrix.at[cities[i], cities[j]]
             matrix.at[cities[j], cities[i]] = cost_matrix.at[cities[j], cities[i]]
+    
     return matrix
 
 # Streamlit app
@@ -92,7 +95,10 @@ def main():
     # Display the matrix table
     if tsp_solver.cities:
         st.subheader("Cost Matrix")
-        tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities, tsp_solver.cost_matrix)
+        if tsp_solver.cost_matrix is None:
+            tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities, pd.DataFrame())
+        else:
+            tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities, tsp_solver.cost_matrix)
         st.table(tsp_solver.cost_matrix)
 
         # Allow user to input costs in the matrix
