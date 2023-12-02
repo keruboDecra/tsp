@@ -87,18 +87,19 @@ def main():
         st.subheader("Added Cities Matrix:")
         st.write(create_matrix_table(tsp_solver.cities))
 
-        if option == "Add City":
-            st.subheader("Add City")
-            city = st.text_input("Enter city name:")
-            if st.button("Add City"):
-                try:
-                    tsp_solver.add_city(city)
-                    st.success(f"City '{city}' added successfully!")
-                except ValueError as e:
-                    st.error(str(e))
+    if option == "Add City":
+        st.subheader("Add City")
+        city = st.text_input("Enter city name:")
+        if st.button("Add City"):
+            try:
+                tsp_solver.add_city(city)
+                st.success(f"City '{city}' added successfully!")
+            except ValueError as e:
+                st.error(str(e))
 
-        elif option == "Set Cost Matrix":
-            st.subheader("Set Cost Matrix")
+    elif option == "Set Cost Matrix":
+        st.subheader("Set Cost Matrix")
+        if tsp_solver.cities:
             tsp_solver.cost_matrix = create_matrix_table(tsp_solver.cities)
             st.table(tsp_solver.cost_matrix)
 
