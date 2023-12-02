@@ -40,7 +40,7 @@ class TSPSolver:
 
             # Consider the user-selected starting city
             if self.start_city:
-                cost += self.cost_matrix.at[perm[-1], self.start_city]
+                cost += self.cost_matrix.at[self.start_city, perm[0]]
 
             total_costs.append((perm + (perm[0],), cost))  # Append the starting city to the permutation
 
@@ -109,16 +109,9 @@ def main():
                     cost = st.number_input(f"Enter cost between {tsp_solver.cities[i]} and {tsp_solver.cities[j]}:")
                     tsp_solver.set_cost(tsp_solver.cities[i], tsp_solver.cities[j], cost)
 
-            if st.button("Set Start City"):
-                if tsp_solver.cities:
-                    start_city = st.selectbox("Select start city:", tsp_solver.cities)
-                    try:
-                        tsp_solver.set_start_city(start_city)
-                        st.success(f"Start city set to '{start_city}' successfully!")
-                    except ValueError as e:
-                        st.error(str(e))
-                else:
-                    st.warning("Please add cities first.")
+            # Set the start city
+            start_city = st.selectbox("Select start city:", tsp_solver.cities)
+            tsp_solver.set_start_city(start_city)
 
             if st.button("Solve TSP"):
                 try:
