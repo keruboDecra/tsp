@@ -127,10 +127,5 @@ def main():
         except ValueError as e:
             st.error(str(e))
 
-    # Display added cities as a matrix
-    if tsp_solver.cities:
-        st.subheader("Added Cities Matrix:")
-        st.write(create_matrix_table(tsp_solver.cities))
-
 if __name__ == "__main__":
     main()
